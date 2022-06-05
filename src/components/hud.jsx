@@ -15,19 +15,21 @@ export default function Hud(props) {
     const [showInput, setShowInput] = useState(false);
     let current_bet = props.current_bet;
 
-    const handleBet = (e) => {
-        props.on_bet(e);
+    const handle_bet = () => {
+        if (bet > player.chips) {
+            alert("You don't have enough chips");
+            return;
+        }
+        props.on_bet(Number(bet));
     };
-    console.log(props.current_bet);
+
     return (
         <div className="hud">
             <div className="bets">
                 <h1>{player.name}</h1>
                 <div className="bet-buttons">
                     {can_call && (
-                        <button
-                            onClick={() => handleBet(player.bet(current_bet))}
-                        >
+                        <button onClick={() => handle_bet(current_bet)}>
                             call
                         </button>
                     )}
@@ -37,9 +39,7 @@ export default function Hud(props) {
                         </button>
                     )}
                     {can_check && (
-                        <button onClick={() => handleBet(player.bet(0))}>
-                            check
-                        </button>
+                        <button onClick={() => handle_bet(0)}>check</button>
                     )}
                     {showInput && (
                         <div>
@@ -48,7 +48,7 @@ export default function Hud(props) {
                                 value={bet}
                                 onChange={(e) => setBet(e.target.value)}
                             />
-                            <button onClick={() => handleBet(player.bet(bet))}>
+                            <button onClick={() => handle_bet(bet)}>
                                 Submit
                             </button>
                         </div>

@@ -65,13 +65,14 @@ export default class Player {
         this.can_call = true;
         this.can_raise = true;
         this.can_check = true;
+        this.bet = 0
 
     }
 
-    bet = (amount) => {
-        this.bank -= amount;
+    add_bet = (amount) => {
+        this.bank -= Number(amount);
         console.log(this.name + " bets " + amount);
-        return amount;
+        this.bet = Number(amount);
     }
 
     fold = () => {
@@ -95,12 +96,18 @@ export default class Player {
 
 export function new_deck() {
     let deck = [];
-    for (let i = 0; i < suits.length; i++) {
-        for (let j = 0; j < values.length; j++) {
-            let suit = Math.floor(Math.random() * suits.length);
-            let value = Math.floor(Math.random() * values.length);
-            deck.push(new Card(suits[suit], values[value]));
+    
+    for(let i = 0; i < suits.length; i++) {
+        for(let j = 0; j < values.length; j++) {
+            console.log(suits[i] + values[j]);
+            deck.push(new Card(suits[i], values[j]));
         }
+    }
+
+
+    for (let i = deck.length - 1; i > 0, i--;) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
     return deck;

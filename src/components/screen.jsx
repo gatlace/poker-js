@@ -15,18 +15,24 @@ export default class Screen extends Component {
         current_player: 0,
         pot: 0,
         stage: "showdown",
-        deck: new_deck(),
+        deck: [],
         c_cards: [],
-        bets: [],
+    };
+
+    bets = () => {
+        let bets = [];
+        this.state.players.forEach((player) => {
+            bets.push(player.bet);
+        });
+        return bets;
     };
 
     render() {
-        console.log(this.state.bets);
         return (
             <div className="screen playingCards faceImages simpleCards">
                 <Header />
                 <Table
-                    bets={this.state.bets}
+                    bets={this.bets()}
                     c_cards={this.state.c_cards}
                     deck={this.state.deck}
                     players={this.state.players}
@@ -38,8 +44,8 @@ export default class Screen extends Component {
                 <button onClick={() => this.reset_table()}>reset</button>
                 <Hud
                     player={this.state.players[this.state.current_player]}
-                    on_bet={(bet) => this.add_bet(bet)}
-                    current_bet={Math.max(...this.state.bets)}
+                    current_bet={Math.max(...this.bets())}
+                    on_bet={this.handle_bet}
                 />
             </div>
         );
@@ -49,6 +55,12 @@ export default class Screen extends Component {
         this.reset_table();
     }
 
+    handle_bet = (bet) => {
+        this.state.players[this.state.current_player].add_bet(bet);
+        this.setState({ pot: this.state.pot + bet });
+        this.next_player();
+    };
+
     next_player = () => {
         if (this.state.current_player === this.state.players.length - 1) {
             this.setState({ current_player: 0 });
@@ -56,22 +68,11 @@ export default class Screen extends Component {
             this.setState({ current_player: this.state.current_player + 1 });
         }
 
-        if (this.state.current_player == 0) {
-            if (
-                this.state.bets.every(
-                    (bet) => bet === Math.max(...this.state.bets)
-                )
-            ) {
+        if (this.state.current_player === 0) {
+            if (this.bets().every((bet) => bet === Math.max(...this.bets()))) {
                 this.next_stage();
             }
         }
-    };
-
-    add_bet = (bet) => {
-        this.setState({ pot: this.state.pot + Number(bet) });
-        this.state.bets[this.state.current_player] = Number(bet);
-        console.log(this.state.bets);
-        this.next_player();
     };
 
     reset_table() {
@@ -82,12 +83,27 @@ export default class Screen extends Component {
             c_cards: [],
             pot: 0,
             stage: "preflop",
-            bets: new Array(this.state.players.length).fill(0),
             current_player: 0,
+            bets: [],
         });
         this.state.players.forEach((player) => {
+            player.bet = 0;
             player.get_hand(this.state.deck.splice(0, 2));
         });
+    }
+
+    check_bets() {
+        let url = "http://api.pokerapi.dev/v1/winner/texas_holdem?";
+        let cc =
+            "cc=" + this.state.c_cards.map((card) => card.api_data).join(",");
+        let pc =
+            "&pc[]=" +
+            this.state.players
+                .map((player) =>
+                    player.hand.map((card) => card.api_data).join(",")
+                )
+                .join("&pc[]=");
+        return url + cc + pc;
     }
 
     next_stage() {
@@ -137,5 +153,11 @@ export default class Screen extends Component {
         this.setState({
             stage: "showdown",
         });
+
+        fetch(this.check_bets())
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+            });
     }
 }

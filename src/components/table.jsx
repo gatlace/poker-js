@@ -11,27 +11,27 @@ export default function Table(props) {
             <ul>
                 <li>
                     c_cards:{" "}
-                    {this.props.c_cards.map((card) => {
+                    {props.c_cards.map((card) => {
                         return card.html_data;
                     })}
                 </li>
                 <li>
                     players:{" "}
-                    {this.props.players.map((player) => {
+                    {props.players.map((player) => {
                         return player.html_data();
                     })}
                 </li>
-                <li>pot: {this.props.pot}</li>
+                <li>pot: {props.pot}</li>
                 <li>
                     bets:{" "}
-                    {this.props.bets.map((bet) => {
+                    {props.bets.map((bet) => {
                         return `$${bet} `;
                     })}
                 </li>
-                <li>stage: {this.props.stage}</li>
+                <li>stage: {props.stage}</li>
                 <li>
                     current player:{" "}
-                    {this.props.players[this.props.current_player].html_data()}
+                    {props.players[props.current_player].html_data()}
                 </li>
             </ul>
         </div>

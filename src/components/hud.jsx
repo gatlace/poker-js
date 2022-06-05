@@ -15,7 +15,7 @@ export default function Hud(props) {
     const [showInput, setShowInput] = useState(false);
     let current_bet = props.current_bet;
 
-    const handle_bet = () => {
+    const handle_bet = (bet) => {
         if (bet > player.chips) {
             alert("You don't have enough chips");
             return;

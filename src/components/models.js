@@ -91,6 +91,7 @@ export default class Player {
 
     get_hand = (cards) => {
         this.hand = cards;
+        console.log(this.name + " has " + this.hand.map(card => card.api_data).join(", "));
     }
 }
 
@@ -99,16 +100,16 @@ export function new_deck() {
     
     for(let i = 0; i < suits.length; i++) {
         for(let j = 0; j < values.length; j++) {
-            console.log(suits[i] + values[j]);
             deck.push(new Card(suits[i], values[j]));
         }
     }
 
 
-    for (let i = deck.length - 1; i > 0, i--;) {
+    for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [deck[i], deck[j]] = [deck[j], deck[i]];
     }
+
 
     return deck;
 }

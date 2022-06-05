@@ -1,0 +1,16 @@
+
+@use './cards.css';
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+}
+
+.screen {
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    justify-content: space-between;
+}

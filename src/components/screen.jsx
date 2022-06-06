@@ -13,10 +13,13 @@ export default function Screen() {
         new Player("Player 2", 1000),
         new Player("Player 3", 1000),
     ]);
-    let [current_player, setCurrentPlayer] = useState(0);
-    let [pot, setPot] = useState(0);
-    let [stage, setStage] = useState("preflop");
-    let [c_cards, setCards] = useState([]);
+    const [current_player, setCurrentPlayer] = useState(0);
+    const [pot, setPot] = useState(0);
+    const [stage, setStage] = useState("none");
+    const [c_cards, setCards] = useState([]);
+    const [winner, setWinner] = useState("");
+    const [winning_hand, setWinningHand] = useState("");
+    const [result, setResult] = useState("");
 
     let bets = () => {
         let bets = [];
@@ -48,13 +51,14 @@ export default function Screen() {
     const next_player = () => {
         if (current_player === players.length - 1) {
             setCurrentPlayer(0);
+            next_stage();
         } else {
             setCurrentPlayer(current_player + 1);
         }
+    };
 
-        if (current_player === 0) {
-            next_stage();
-        }
+    const on_play = () => {
+        reset_table();
     };
 
     const next_stage = () => {
@@ -80,9 +84,23 @@ export default function Screen() {
         }
     };
 
+    const deal_cards = () => {
+        var temp_deck = new_deck();
+
+        setPlayers(
+            players.map((player) => {
+                player.bet = 0;
+                player.get_hand(temp_deck.splice(0, 2));
+                return player;
+            })
+        );
+
+        setDeck(temp_deck);
+    };
+
     const flop = () => {
         setStage("flop");
-        setCards(deck.splice(0, 3));
+        setCards(c_cards.concat(deck.splice(0, 3)));
         console.log(deck.length);
     };
 
@@ -98,33 +116,35 @@ export default function Screen() {
         console.log(deck.length);
     };
 
-    const showdown = () => {
+    const showdown = async () => {
         setStage("showdown");
 
-        fetch(check_bets())
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-            });
+        let result = await fetch(check_bets()).then((res) => res.json());
+
+        setWinner(
+            players.find(
+                (player) =>
+                    player.hand.map((card) => card.api_data).join(",") ===
+                    result.winners[0].cards
+            ).name
+        );
+
+        setWinningHand(result.winners[0].hand);
+        setResult(result.winners[0].result);
+        
     };
 
     const reset_table = () => {
-        setDeck(new_deck());
+        setCards([]);
         setStage("preflop");
         setPot(0);
         setCurrentPlayer(0);
-        setCards([]);
-        setPlayers(
-            players.map((player) => {
-                player.get_hand(deck.splice(0, 2));
-                return player;
-            })
-        );
+        deal_cards();
         console.log(deck.length);
     };
 
     return (
-        <div className="screen playingCards faceImages simpleCards">
+        <div className="screen playingCards faceImages simpleCards rotateHand">
             <Header />
             <Table
                 bets={bets()}
@@ -134,11 +154,16 @@ export default function Screen() {
                 pot={pot}
                 stage={stage}
                 current_player={current_player}
-                on_next_player={next_player}
+                on_play={on_play}
+                winner={winner}
+                winning_hand={winning_hand}
+                result={result}
             />
             <button onClick={() => reset_table()}>reset</button>
             <Hud
+                stage={stage}
                 player={players[current_player]}
+                current_player={current_player}
                 current_bet={Math.max(...bets())}
                 on_bet={handle_bet}
             />

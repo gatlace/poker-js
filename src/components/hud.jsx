@@ -20,6 +20,20 @@ export default function Hud(props) {
             alert("You don't have enough chips");
             return;
         }
+
+        //if (props.stage === "preflop") {
+        //    if (props.current_player === 0) {
+        //        if (bet < 50) {
+        //            alert("You must bet at least 50 chips");
+        //            return;
+        //        }
+        //    } else if (props.current_player === 1) {
+        //        if (bet < 100) {
+        //            alert("You must bet at least 100 chips");
+        //            return;
+        //        }
+        //    }
+        //}
         props.on_bet(Number(bet));
     };
 
@@ -70,6 +84,8 @@ export default function Hud(props) {
 }
 
 Hud.propTypes = {
+    current_player: PropTypes.number.isRequired,
+    stage: PropTypes.string.isRequired,
     player: PropTypes.instanceOf(Player),
     current_bet: PropTypes.number.isRequired,
     on_bet: PropTypes.func.isRequired,

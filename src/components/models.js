@@ -80,11 +80,20 @@ export default class Player {
         this.hand = [];
     }
 
+    get hand_html() {
+        return (<ul className="hand">
+            {this.hand.map(card => <li>{card.html_data}</li>)}
+            </ul>)
+    }
+
     html_data = () => {
         return(
-            <span>
-            <i>{this.name}: </i>
-            <i>${this.bank}</i>
+            <span className="player">
+                <span>
+                {this.name}
+                <i>${this.bank}</i>
+                {this.hand_html}
+                </span>
             </span>
         )
     }

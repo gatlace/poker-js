@@ -6,14 +6,18 @@
 }
 
 .bets {
-    width: 40%;
+    background: rgb(116, 116, 116);
+    border-radius: 5%;
+    width: 46%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .cards {
-    width: 40%;
+    background: green;
+    border-radius: 5%;
+    width: 46%;
     display: flex;
     flex-direction: column;
     align-items: center;

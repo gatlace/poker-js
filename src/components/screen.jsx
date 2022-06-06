@@ -26,6 +26,16 @@ export default function Screen() {
         players.forEach((player) => {
             bets.push(player.bet);
         });
+
+        if (stage === "preflop") {
+            if (current_player === 0) {
+                bets[0] = 50;
+            }
+            if (current_player === 1) {
+                bets[1] = 100;
+            }
+        }
+
         return bets;
     };
 
@@ -39,6 +49,7 @@ export default function Screen() {
                     player.hand.map((card) => card.api_data).join(",")
                 )
                 .join("&pc[]=");
+        console.log(url + cc + pc);
         return url + cc + pc;
     };
 
@@ -62,6 +73,12 @@ export default function Screen() {
     };
 
     const next_stage = () => {
+        setPlayers(
+            players.map((player) => {
+                player.bet = 0;
+                return player;
+            })
+        );
         console.log(stage);
         switch (stage) {
             case "preflop":
@@ -126,12 +143,11 @@ export default function Screen() {
                 (player) =>
                     player.hand.map((card) => card.api_data).join(",") ===
                     result.winners[0].cards
-            ).name
+            )
         );
-
         setWinningHand(result.winners[0].hand);
+
         setResult(result.winners[0].result);
-        
     };
 
     const reset_table = () => {
@@ -139,12 +155,30 @@ export default function Screen() {
         setStage("preflop");
         setPot(0);
         setCurrentPlayer(0);
+        setWinner("");
+        setWinningHand("");
+        setResult("");
         deal_cards();
         console.log(deck.length);
     };
 
+    const handle_winner = () => {
+        winner.bank += pot;
+        reset_table();
+    };
+
+    const reset_players = () => {
+        setPlayers(
+            players.map((player) => {
+                player.bet = 0;
+                player.bank = 5000;
+                return player;
+            })
+        );
+    };
+
     return (
-        <div className="screen playingCards faceImages simpleCards rotateHand">
+        <div className="screen">
             <Header />
             <Table
                 bets={bets()}
@@ -155,11 +189,19 @@ export default function Screen() {
                 stage={stage}
                 current_player={current_player}
                 on_play={on_play}
-                winner={winner}
+                on_new_round={handle_winner}
+                winner={winner.name}
                 winning_hand={winning_hand}
                 result={result}
             />
-            <button onClick={() => reset_table()}>reset</button>
+            <button
+                onClick={() => {
+                    reset_table();
+                    reset_players();
+                }}
+            >
+                reset everything
+            </button>
             <Hud
                 stage={stage}
                 player={players[current_player]}

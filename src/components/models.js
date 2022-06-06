@@ -17,8 +17,8 @@ const values = [
 
 export class Card {
     constructor(suit, value) {
-        this.suit = suit;
-        this.value = value;
+        this.suit = String(suit);
+        this.value = String(value);
     }
 
     get api_data() {
@@ -88,6 +88,7 @@ export default class Player {
 
     html_data = () => {
         return(
+        <div className="playingCards faceImages rotateHand">
             <span className="player">
                 <span>
                 {this.name}
@@ -95,6 +96,7 @@ export default class Player {
                 {this.hand_html}
                 </span>
             </span>
+            </div>
         )
     }
 

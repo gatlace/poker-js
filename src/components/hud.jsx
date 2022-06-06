@@ -13,7 +13,7 @@ export default function Hud(props) {
 
     const [bet, setBet] = useState(0);
     const [showInput, setShowInput] = useState(false);
-    let current_bet = props.current_bet;
+    const current_bet = props.current_bet;
 
     const handle_bet = (bet) => {
         if (bet > player.chips) {
@@ -21,19 +21,11 @@ export default function Hud(props) {
             return;
         }
 
-        //if (props.stage === "preflop") {
-        //    if (props.current_player === 0) {
-        //        if (bet < 50) {
-        //            alert("You must bet at least 50 chips");
-        //            return;
-        //        }
-        //    } else if (props.current_player === 1) {
-        //        if (bet < 100) {
-        //            alert("You must bet at least 100 chips");
-        //            return;
-        //        }
-        //    }
-        //}
+        if (bet < current_bet) {
+            alert(`You must bet at least $${current_bet}`);
+            return;
+        }
+
         props.on_bet(Number(bet));
     };
 
@@ -43,26 +35,47 @@ export default function Hud(props) {
                 <h1>{player.name}</h1>
                 <div className="bet-buttons">
                     {can_call && (
-                        <button onClick={() => handle_bet(current_bet)}>
+                        <button
+                            onClick={() => {
+                                props.stage !== "showdown" &&
+                                    handle_bet(current_bet);
+                            }}
+                        >
                             call
                         </button>
                     )}
                     {can_raise && (
-                        <button onClick={() => setShowInput(!showInput)}>
+                        <button
+                            onClick={() => {
+                                props.stage !== "showdown" &&
+                                    setShowInput(!showInput);
+                            }}
+                        >
                             Raise
                         </button>
                     )}
                     {can_check && (
-                        <button onClick={() => handle_bet(0)}>check</button>
+                        <button
+                            onClick={() => {
+                                props.stage !== "showdown" && handle_bet(0);
+                            }}
+                        >
+                            check
+                        </button>
                     )}
-                    {showInput && (
+                    {props.stage !== "showdown" && showInput && (
                         <div>
                             <input
                                 type="number"
                                 value={bet}
                                 onChange={(e) => setBet(e.target.value)}
                             />
-                            <button onClick={() => handle_bet(bet)}>
+                            <button
+                                onClick={() => {
+                                    setShowInput(!showInput);
+                                    handle_bet(bet);
+                                }}
+                            >
                                 Submit
                             </button>
                         </div>
@@ -73,7 +86,7 @@ export default function Hud(props) {
             </div>
             <div className="cards">
                 <h1>Cards</h1>
-                <div className="card-container">
+                <div className="playingCards faceImages">
                     {player.hand.map((card) => {
                         return card.html_data;
                     })}

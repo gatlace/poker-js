@@ -1,6 +1,7 @@
 import React from "react";
 import "./css/table.scss";
 import PropTypes from "prop-types";
+import { Card } from "./models.js";
 
 export default function Table(props) {
     if (props.stage === "none") {
@@ -13,15 +14,28 @@ export default function Table(props) {
         );
     }
 
+    const winning_hand = () => {
+        let hand = props.winning_hand.split(",").map((card) => {
+            console.log(card);
+            if (card.length === 2) {
+                return new Card(card.slice(1), card.slice(0));
+            }
+            return new Card(card.slice(2), card.slice(0, 1));
+        });
+
+        return (
+            <span className="playingCards inText winning_hand">
+                {hand.map((card) => {
+                    return card.html_data;
+                })}
+            </span>
+        );
+    };
+
     const info = (
         <div className="info">
-            pot: {props.pot}
-            bets:{" "}
-            {props.bets.map((bet) => {
-                return `$${bet} `;
-            })}
             stage: {props.stage}
-            <div className="c_cards">
+            <div className="playingCards faceImages c_cards">
                 {props.c_cards.map((card) => {
                     return card.html_data;
                 })}
@@ -30,8 +44,8 @@ export default function Table(props) {
                 <div>
                     <h1>Winner: {props.winner}</h1>
                     <h2>Result: {props.result}</h2>
-                    <h3>Hand: {props.winning_hand}</h3>
-                    <button onClick={props.on_play}>reset round</button>
+                    Hand: {winning_hand()}
+                    <button onClick={props.on_new_round}>next round</button>
                 </div>
             )}
         </div>
@@ -39,8 +53,15 @@ export default function Table(props) {
     return (
         <div className={"poker_table"}>
             <div className="players">
-                {props.players.map((player) => {
-                    return player.html_data();
+                <div className="hands">
+                    {props.players.map((player) => {
+                        return player.html_data();
+                    })}
+                </div>
+                pot: {props.pot}
+                bets:{" "}
+                {props.bets.map((bet) => {
+                    return `$${bet} `;
                 })}
             </div>
             {info}

@@ -4,16 +4,17 @@ import Player from "./models.js";
 import PropTypes from "prop-types";
 
 export default function Hud(props) {
-    const [player, can_call, can_raise, can_check] = [
-        props.player,
-        props.player.can_call,
-        props.player.can_raise,
-        props.player.can_check,
+    const player = props.player;
+    const current_bet = props.current_bet;
+
+    let [can_call, can_raise, can_check] = [
+        player.bank >= current_bet,
+        player.bank > current_bet,
+        current_bet === 0,
     ];
 
     const [bet, setBet] = useState(0);
     const [showInput, setShowInput] = useState(false);
-    const current_bet = props.current_bet;
 
     const handle_bet = (bet) => {
         if (bet > player.chips) {

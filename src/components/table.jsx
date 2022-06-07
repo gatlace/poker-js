@@ -58,7 +58,7 @@ export default function Table(props) {
                         return player.html_data();
                     })}
                 </div>
-                pot: {props.pot}
+                <div>pot: {props.pot}</div>
                 bets:{" "}
                 {props.bets.map((bet) => {
                     return `$${bet} `;

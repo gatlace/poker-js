@@ -93,7 +93,14 @@ export default class Player {
                 <span>
                 {this.name}
                 <i>${this.bank}</i>
-                {this.hand_html}
+                <ul className="hand">
+                    <li>
+                        <div className="card back">*</div>
+                    </li>
+                    <li>
+                        <div className="card back">*</div>
+                    </li>
+                </ul>
                 </span>
             </span>
             </div>
